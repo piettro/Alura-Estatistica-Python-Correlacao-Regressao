@@ -9,33 +9,18 @@ dataset = {
     'X': [9714, 3728, 6062, 8845, 8378, 3338, 8507, 7947, 9915, 1632, 6825, 8918, 4100, 9184, 6180, 9997, 4500, 1069, 5925, 2466, 6083, 9712, 7780, 8383, 7185, 7483, 7640, 2100, 2000, 6012, 8902, 5345, 8210, 5662, 2700, 6546, 2900, 9894, 1500, 5000, 8885, 8813, 3446, 7881, 1164, 3401, 6641, 3329, 6648, 4800]
 }
 
-dataset = pd.DataFrame(dataset)
-print(dataset.head())
-print(dataset.describe())
-
-ax = sns.boxplot(data=dataset, orient='h', width=0.5)
-ax.figure.set_size_inches(12, 6)
-ax.set_title('Box plot', fontsize=20)
-ax.set_xlabel('Reais (R$)', fontsize=16)
-plt.show()
-
-ax = sns.lmplot(x="X", y="Y", data=dataset)
-ax.fig.set_size_inches(12, 6)
-ax.fig.suptitle('Linear Regression - Spent X Income', fontsize=16, y=1.02)
-ax.set_xlabels("Family Income", fontsize=14)
-ax.set_ylabels("Family Spent", fontsize=14)
-plt.show()
-
-print(dataset.corr())
-
 Y = dataset.Y
 X = sm.add_constant(dataset.X)
 
-print(Y.head())
-print(X.head())
+model  = sm.OLS(Y,X, missing='drop')
+result = model.fit()
 
-regression_result = sm.OLS(Y, X).fit()
-print(regression_result.summary())
+print(f'params: {result.params}')
 
-dataset['Y_predict'] = regression_result.predict()
-print(dataset)
+conf_interval = result.conf_int(alpha=0.05)
+print(conf_interval)
+
+dataset['Y_predict'] = result.predict()
+print(dataset.head(10))
+
+print(result.predict([1, 7510])[0])
